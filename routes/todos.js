@@ -46,4 +46,47 @@ router.post('/todo', function(req, res, next){
     }
 });
 
+// update todo
+router.put('/todo/:id', function(req, res, next){
+    var todo = req.body;
+    var updatedObj = {};
+
+    if (todo.isCompleted){
+        updatedObj.isCompleted = todo.isCompleted;
+    }
+
+    if(todo.text){
+        updatedObj.text = todo.text;
+    }
+
+    if(!updatedObj){
+        res.status(400);
+        res.json({
+            "error" : "invalid data"
+        });
+    } else {
+        db.todos.update({
+            _id : mongojs.ObjectId(req.params.id)
+        }, updatedObj, {}, function(err, result){
+            if (err){
+                res.send(err);
+            }else{
+                res.json(todo);
+            }
+        });
+    }
+});
+
+router.delete('/todo/:id', function(req, res, next){
+    db.todos.remove({
+        _id: mongojs.ObjectId(req.params.id)
+    }, '', function (err, result) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.json(todo);
+        }
+    });
+});
+//delete todo
 module.exports = router;
